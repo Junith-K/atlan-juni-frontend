@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# SQL Query Editor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+The SQL Query Editor in ReactJS is a sophisticated web application tailored for data analysts and SQL query processing. It boasts an integrated code editor for composing SQL queries, supporting multiple tabs with preserved data for efficient multitasking. This application excels in handling large CSV files using PapaParse and Chunk Based Rendering. Displaying query results in a table format with React-Table, it includes execution time metrics and offers advanced features such as History, Saving, Pagination, and more. This makes it a robust and flexible tool for data analysts and developers alike.
 
-In the project directory, you can run:
+## Frameworks and Major Packages Used
 
-### `npm start`
+1. **React.js** ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=white) - A powerful front-end JavaScript library for building user interfaces based on components.
+2. **Redux** ![Redux](https://img.shields.io/badge/-Redux-764ABC?logo=redux&logoColor=white) - A state management library commonly used with React for building user interfaces.
+3. **TailwindCSS** ![TailwindCSS](https://img.shields.io/badge/-Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white) - A utility-first CSS framework providing flexibility without predefined classes.
+4. **Papaparse** ![Papaparse](https://img.shields.io/badge/-Papaparse-FF6B6B?logo=papaparse&logoColor=white) - The fastest in-browser CSV parser for JavaScript, reliable and RFC 4180 compliant.
+5. **@uiw/react-codemirror** ![CodeMirror](https://img.shields.io/badge/-CodeMirror-0277BD?logo=codemirror&logoColor=white) - A web browser code editor with themes.
+6. **Lodash** ![Lodash](https://img.shields.io/badge/-Lodash-3492FF?logo=lodash&logoColor=white) - A utility library providing throttle and debounce functionality.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features Implemented
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Code Editor with Dark/Light Mode** 🌗
+    - Implemented a Code Editor using the react-codemirror package, enhancing user experience with Dracula and Light Themes.
 
-### `npm test`
+2. **Tab System** 📑
+    - Introduced a Tab System for seamless navigation through multiple queries. A maximum of 10 Tabs can be opened concurrently with different queries.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Execute Query** ▶️
+    - Displays query results in a table format using the `react-table` package, showcasing execution time and the number of rows returned.
 
-### `npm run build`
+4. **Pagination** 📄
+    - Implemented pagination for improved webpage performance. An additional option to select `all` to view all rows, though it may affect performance.
+    - Custom page number input for quick navigation through rows.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. **Highlight Column** 🎨
+    - Select any column header to highlight the entire column, facilitating better visibility and comparison with other tables when switching tabs.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+6. **Edit Tab Name** 🖊️
+    - Double-click on the Tab Name (e.g., Tab 1) to open an input text box for editing the Tab name.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+7. **Query List/History/Saved** 🕒
+    - View demo queries, history of executed queries, and saved queries. Click on any item to automatically open a new tab with the query.
+    - Remove history/saved queries with a maximum limit of 10 queries per list.
 
-### `npm run eject`
+8. **Export in CSV/JSON/EXCEL** 📊
+    - Download data in CSV, JSON, or Excel format. Throttle function prevents multiple clicks within a short timeframe.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+9. **Dark/Light Mode** 🌓
+    - Switch between Dark and Light modes for improved viewability.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+10. **Copy Query** 📋
+    - Click on the Copy Query button to copy the current text in the code editor to your clipboard.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+11. **Tips Option** 💡
+    - Provides helpful tips for users on the website.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Page Load Time Measurement
 
-## Learn More
+![Lighthouse Screenshot](/public/performance.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Optimizations
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Chunk Based Rendering:** Utilizing Papaparse's Chunks feature for efficient updates to the table data, improving performance.
 
-### Code Splitting
+- **Pagination:** Optimize rendering by implementing pagination, enabling users to view data in manageable chunks. Additional "all" option available for viewing all rows.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Throttled Function Calls:** Implemented throttling mechanisms for certain functions (e.g., executing a query, exporting data), preventing excessive calls and optimizing performance.
 
-### Analyzing the Bundle Size
+- **Memoization (useMemo):** Enhancing performance using the useMemo hook to store column data and avoid redundant computations.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **Callback (useCallback):** Improving performance by memoizing callback functions using the useCallback hook, reducing re-renders.
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Storing Tab Data:** Optimizing performance by storing individual tab states independently, ensuring data persistence when switching tabs.

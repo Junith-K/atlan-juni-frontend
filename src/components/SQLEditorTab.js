@@ -1,5 +1,5 @@
 // SQLEditorTab.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import SQLEditor from "./SQLEditor";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
@@ -8,6 +8,7 @@ import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { utils, write } from "xlsx";
 import { big, employee_territories, products, suppliers, territories } from "../utils/schema";
+import { throttle  } from 'lodash';
 
 const SQLEditorTab = ({
   tabState,
@@ -28,13 +29,15 @@ const SQLEditorTab = ({
     table3: "SELECT * FROM table3;",
   };
   const predefinedSchema = query[query.length-2]=="g"?big:query[query.length-2]=="1"?products:query[query.length-2]=="2"?suppliers:query[query.length-2]=="3"?territories:employee_territories;
-  const handleQueryChange = (newQuery) => {
-    updateTabState({ query: newQuery });
-  };
 
-  const toggleSchemaView = () => {
+
+  const handleQueryChange = useCallback((newQuery) => {
+    updateTabState({ query: newQuery });
+  }, [updateTabState]);
+
+  const toggleSchemaView = useCallback(() => {
     updateTabState({ ...tabState, showSchema: !showSchema });
-  };
+  }, [tabState, showSchema, updateTabState]);
 
   const readCsv = async (fileName) => {
     const response = await fetch(fileName);
@@ -45,13 +48,12 @@ const SQLEditorTab = ({
     return csv;
   };
 
-  const handleColumnHighlight = (columnId) => {
+  const handleColumnHighlight = useCallback((columnId) => {
     updateTabState({
       ...tabState,
-      highlightedColumn:
-        columnId === tabState.highlightedColumn ? null : columnId,
+      highlightedColumn: columnId === tabState.highlightedColumn ? null : columnId,
     });
-  };
+  }, [tabState, updateTabState]);
 
   const parseCsv = (csv) => {
     Papa.parse(csv, {
@@ -75,13 +77,9 @@ const SQLEditorTab = ({
     });
   };
   
-  const updatePageSize = (value) => {
-    setPageSizeSelected(value);
-    const newSize = value === "all" ? tableData.length : Number(value);
-    setPageSize(newSize);
-  };
+  
 
-  const executeQuery = async () => {
+  const executeQuery = useCallback(async () => {
     const startTime = performance.now();
     let csvFile;
     if (query === queries.table1) {
@@ -92,21 +90,24 @@ const SQLEditorTab = ({
       csvFile = "/territories.csv";
     } else if(query=== queries.table0){
       csvFile = "/big.csv";
-    }else{
-      csvFile = "/employee_territories.csv"
+    } else {
+      csvFile = "/employee_territories.csv";
     }
-  
+
     const csvData = await readCsv(csvFile);
     parseCsv(csvData);
-  
+
     const queryExecutionTime = ((performance.now() - startTime) / 1000).toFixed(2);
     updateTabState2({
       queryExecutionTime: queryExecutionTime
     });
     addQueryToHistory(tabState.query);
-  };
-  
+  }, [addQueryToHistory, queries, query, readCsv, tabState, updateTabState2]);
 
+  
+  const throttledExecuteQuery = useCallback(throttle(() => {
+    executeQuery();
+  }, 1000), [executeQuery]);
 
   const columns = React.useMemo(
     () =>
@@ -143,6 +144,12 @@ const SQLEditorTab = ({
     pageOptions,
   } = tableInstance;
 
+  const updatePageSize = useCallback((value) => {
+    setPageSizeSelected(value);
+    const newSize = value === "all" ? tableData.length : Number(value);
+    setPageSize(newSize);
+  }, [setPageSize, setPageSizeSelected, tableData]);
+
   const fileType = {
     csv: "text/csv;charset=utf-8;",
     excel:
@@ -176,9 +183,21 @@ const SQLEditorTab = ({
     saveAs(blob, "data_export" + fileExtension.json);
   };
 
+  const throttledExportToCSV = useCallback(throttle(() => {
+    exportToCSV();
+  }, 1000), [exportToCSV]);
+
+  const throttledExportToExcel = useCallback(throttle(() => {
+    exportToExcel();
+  }, 1000), [exportToExcel]);
+
+  const throttledExportToJSON = useCallback(throttle(() => {
+    exportToJSON();
+  }, 1000), [exportToJSON]);
+
   return (
     <div className="p-2">
-      <SQLEditor  value={query}  onChange={handleQueryChange}  onExecuteQuery={executeQuery}  onSaveQuery={onSaveQuery}/>
+      <SQLEditor  value={query}  onChange={handleQueryChange}  onExecuteQuery={throttledExecuteQuery}  onSaveQuery={onSaveQuery}/>
       {tableData.length > 0 && (
         <>
           <div className="flex justify-between mt-2">
@@ -193,13 +212,13 @@ const SQLEditorTab = ({
             <button className="px-3 p-2 bg-red-400 rounded-md mr-2" onClick={toggleSchemaView}>
               View {showSchema ? "Table" : "Schema"}
             </button>
-              <button  onClick={exportToCSV}  className="px-3 p-2 bg-red-400 rounded-md mr-2">
+              <button  onClick={throttledExportToCSV}  className="px-3 p-2 bg-red-400 rounded-md mr-2">
                 Export as CSV
               </button>
-              <button  onClick={exportToExcel}  className="px-3 p-2 bg-red-400 rounded-md mr-2">
+              <button  onClick={throttledExportToExcel}  className="px-3 p-2 bg-red-400 rounded-md mr-2">
                 Export as Excel
               </button>
-              <button  onClick={exportToJSON}  className="px-3 p-2 bg-red-400 rounded-md">
+              <button  onClick={throttledExportToJSON}  className="px-3 p-2 bg-red-400 rounded-md">
                 Export as JSON
               </button>
             </div>

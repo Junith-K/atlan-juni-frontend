@@ -21,6 +21,11 @@ const App = () => {
 
   const handleSaveQuery = (query) => {
     setSavedQueries((prevQueries) => {
+      if (prevQueries.length >= 10) {
+        alert("Maximum of 10 saved queries allowed.");
+        return prevQueries;
+      }
+  
       const queriesSet = new Set(prevQueries.map((q) => q.query));
       if (!queriesSet.has(query)) {
         return [...prevQueries, { id: prevQueries.length + 1, query }];
@@ -28,8 +33,14 @@ const App = () => {
       return prevQueries;
     });
   };
+  
 
   const addNewTab = () => {
+    if (tabs.length >= 10) {
+      alert("Maximum of 10 tabs allowed.");
+      return;
+    }
+  
     const newTabId = tabs.length ? Math.max(...tabs.map((t) => t.id)) + 1 : 1;
     const newTabs = [
       ...tabs,
@@ -44,6 +55,7 @@ const App = () => {
     setTabs(newTabs);
     setActiveTab(newTabId);
   };
+  
 
   const startEditing = (tabId, name) => {
     setEditingTab(tabId);

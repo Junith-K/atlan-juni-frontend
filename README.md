@@ -67,3 +67,13 @@ The SQL Query Editor in ReactJS is a sophisticated web application tailored for 
 - **Callback (useCallback):** Improving performance by memoizing callback functions using the useCallback hook, reducing re-renders.
 
 - **Storing Tab Data:** Optimizing performance by storing individual tab states independently, ensuring data persistence when switching tabs.
+
+## Additional Images
+
+![HomePage Screenshot](/public/homepage.png)
+![Table Screenshot](/public/loadedtable.png)
+![Schema Screenshot](/public/schema.png)
+![Highlight Screenshot](/public/highlight.png)
+![DarkMode Screenshot](/public/darkmode.png)
+![LightMode Screenshot](/public/lightmode.png)
+![Tips Screenshot](/public/tips.png)

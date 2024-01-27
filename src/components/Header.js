@@ -69,7 +69,7 @@ const Header = () => {
       >
         <button style={closeButtonStyle} onClick={closeTipsModal}>&times;</button>
         <div className="mr-10 p-5">
-          <h2 className="font-extrabold text-center mb-2">Tips for Using the Application</h2>
+          <h2 className="font-extrabold text-center mb-2 text-2xl">Tips for Using the Application</h2>
           <p><span className="font-bold">New Tab:</span> Click on + to open a new tab.</p>
           <p><span className="font-bold">Highlight Column:</span> Click on the column header of a table to highlight (Excluding ID Header).</p>
           <p><span className="font-bold">Chunk Based Rendering:</span> Updates Table per 1024*10 bytes (Papaparse).</p>

@@ -1,5 +1,5 @@
 // SQLEditorTab.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SQLEditor from "./SQLEditor";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
@@ -7,7 +7,7 @@ import { useTable, usePagination } from "react-table";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import { utils, write } from "xlsx";
-import { products, suppliers, territories } from "../utils/schema";
+import { big, employee_territories, products, suppliers, territories } from "../utils/schema";
 
 const SQLEditorTab = ({
   tabState,
@@ -15,18 +15,19 @@ const SQLEditorTab = ({
   darkMode,
   addQueryToHistory,
   onSaveQuery,
+  updateTabState1,
+  updateTabState2
 }) => {
   const { query, tableData, queryExecutionTime } = tabState;
   const { showSchema = false } = tabState;
-
   const [pageSizeSelected, setPageSizeSelected] = useState(25);
   const queries = {
-    table1: "SELECT * FROM table1",
-    table2: "SELECT * FROM table2",
-    table3: "SELECT * FROM table3",
+    table0: "SELECT * FROM big;",
+    table1: "SELECT * FROM table1;",
+    table2: "SELECT * FROM table2;",
+    table3: "SELECT * FROM table3;",
   };
-  const predefinedSchema = query[query.length-1]=="1"?products:query[query.length-1]=="2"?suppliers:territories;
-
+  const predefinedSchema = query[query.length-2]=="g"?big:query[query.length-2]=="1"?products:query[query.length-2]=="2"?suppliers:query[query.length-2]=="3"?territories:employee_territories;
   const handleQueryChange = (newQuery) => {
     updateTabState({ query: newQuery });
   };
@@ -53,15 +54,27 @@ const SQLEditorTab = ({
   };
 
   const parseCsv = (csv) => {
-    const parsed = Papa.parse(csv, {
+    Papa.parse(csv, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
+      beforeFirstChunk: ()=>{
+        updateTabState({tableData: []});
+      },
+      chunkSize: 1024*10,
+      chunk: (results, parser) => {
+        let resultData = results.data.filter((row) => Object.values(row).some((val) => val !== null && val !== ""))
+        updateTabState1(resultData);
+      },
+      complete: () => {
+        console.log("All chunks processed");
+      },
+      error: (error) => {
+        console.error("Error while parsing:", error);
+      }
     });
-    return parsed.data.filter((row) =>
-      Object.values(row).some((val) => val !== null && val !== "")
-    );
   };
+  
   const updatePageSize = (value) => {
     setPageSizeSelected(value);
     const newSize = value === "all" ? tableData.length : Number(value);
@@ -69,8 +82,7 @@ const SQLEditorTab = ({
   };
 
   const executeQuery = async () => {
-    const startTime = performance.now(); // Start timing
-
+    const startTime = performance.now();
     let csvFile;
     if (query === queries.table1) {
       csvFile = "/products.csv";
@@ -78,21 +90,23 @@ const SQLEditorTab = ({
       csvFile = "/suppliers.csv";
     } else if (query === queries.table3) {
       csvFile = "/territories.csv";
-    } else {
-      updateTabState({ tableData: [] });
-      return;
+    } else if(query=== queries.table0){
+      csvFile = "/big.csv";
+    }else{
+      csvFile = "/employee_territories.csv"
     }
-
+  
     const csvData = await readCsv(csvFile);
-    const parsedData = parseCsv(csvData);
-
-    // Update the state with new data
-    updateTabState({
-      tableData: parsedData,
-      queryExecutionTime: ((performance.now() - startTime) / 1000).toFixed(2),
+    parseCsv(csvData);
+  
+    const queryExecutionTime = ((performance.now() - startTime) / 1000).toFixed(2);
+    updateTabState2({
+      queryExecutionTime: queryExecutionTime
     });
     addQueryToHistory(tabState.query);
   };
+  
+
 
   const columns = React.useMemo(
     () =>
@@ -164,21 +178,12 @@ const SQLEditorTab = ({
 
   return (
     <div className="p-2">
-      <SQLEditor
-        value={query}
-        onChange={handleQueryChange}
-        onExecuteQuery={executeQuery}
-        onSaveQuery={onSaveQuery}
-      />
-
-      {/* Conditional rendering based on whether tableData is not empty */}
+      <SQLEditor  value={query}  onChange={handleQueryChange}  onExecuteQuery={executeQuery}  onSaveQuery={onSaveQuery}/>
       {tableData.length > 0 && (
         <>
-          <div className="flex justify-between">
+          <div className="flex justify-between mt-2">
             {queryExecutionTime && (
-              <div
-                className={`${darkMode ? "text-white" : "text-gray-900"} mt-4`}
-              >
+              <div  className={`${darkMode ? "text-white" : "text-gray-900"} mt-4`}>
                 Query ran in {queryExecutionTime}s -{" "}
                 {tableData.length} Rows Loaded
               </div>
@@ -188,22 +193,13 @@ const SQLEditorTab = ({
             <button className="px-3 p-2 bg-red-400 rounded-md mr-2" onClick={toggleSchemaView}>
               View {showSchema ? "Table" : "Schema"}
             </button>
-              <button
-                onClick={exportToCSV}
-                className="px-3 p-2 bg-red-400 rounded-md mr-2"
-              >
+              <button  onClick={exportToCSV}  className="px-3 p-2 bg-red-400 rounded-md mr-2">
                 Export as CSV
               </button>
-              <button
-                onClick={exportToExcel}
-                className="px-3 p-2 bg-red-400 rounded-md mr-2"
-              >
+              <button  onClick={exportToExcel}  className="px-3 p-2 bg-red-400 rounded-md mr-2">
                 Export as Excel
               </button>
-              <button
-                onClick={exportToJSON}
-                className="px-3 p-2 bg-red-400 rounded-md"
-              >
+              <button  onClick={exportToJSON}  className="px-3 p-2 bg-red-400 rounded-md">
                 Export as JSON
               </button>
             </div>

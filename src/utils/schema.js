@@ -32,4 +32,19 @@ const products = [
     { columnName: "discontinued", dataType: "integer" },
 ]
 
-export {suppliers, products, territories};
+const employee_territories = [
+    { columnName: "employeeID", dataType: "integer" },
+    { columnName: "territoryID", dataType: "integer" },
+]
+
+const big =[
+    { columnName: "Stock Name", dataType: "string" },
+    { columnName: "Country of Listing", dataType: "string" },
+    { columnName: "Ticker", dataType: "string" },
+    { columnName: "Margin Rate", dataType: "integer%" },
+    { columnName: "Go Short", dataType: "string" },
+    { columnName: "Limited Risk Premium", dataType: "float%" },
+
+]
+
+export {suppliers, products, territories, employee_territories, big};

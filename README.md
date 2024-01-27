@@ -70,10 +70,23 @@ The SQL Query Editor in ReactJS is a sophisticated web application tailored for 
 
 ## Additional Images
 
+1. **Homepage**
 ![HomePage Screenshot](/public/homepage.png)
-![Table Screenshot](/public/loadedtable.png)
+
+2. **Table Data**
+![Table Screenshot](/public/loaded_table.png)
+
+3. **Schema Data**
 ![Schema Screenshot](/public/schema.png)
+
+4. **Highlight Column**
 ![Highlight Screenshot](/public/highlight.png)
+
+5. **DarkMode**
 ![DarkMode Screenshot](/public/darkmode.png)
+
+6. **LightMode**
 ![LightMode Screenshot](/public/lightmode.png)
+
+7. **Tips**
 ![Tips Screenshot](/public/tips.png)
